@@ -8,6 +8,7 @@ RUN apt-get update && apt-get install -y \
     libpq-dev \
     libicu-dev \
     zlib1g-dev \
+    git \
     && docker-php-ext-configure intl \
     && docker-php-ext-install intl pdo pdo_mysql
 
@@ -21,11 +22,14 @@ RUN curl -sS https://get.symfony.com/cli/installer | bash \
 # Configure le répertoire de travail
 WORKDIR /usr/src/myapp
 
-# Copie le code source de l'application
-COPY . /usr/src/myapp
+# Copier tous les fichiers de l'application
+COPY . .
+
+# Installer les dépendances PHP
+RUN composer install
 
 # Expose le port 8000
 EXPOSE 8000
 
 # Exécute le serveur Symfony
-CMD ["symfony", "server:start", "--no-tls"]
+CMD ["symfony", "server:start", "--no-tls", "--allow-http", "--port=8000"]
